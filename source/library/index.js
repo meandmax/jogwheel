@@ -1,12 +1,18 @@
-import defaults from './defaults.js';
 import getPlayer from './get-player.js';
 
 class JogWheel {
 	/**
 	 * Creates a new JogWheel instance
+	 * @name JogWheel.create
 	 * @constructor
-	 * @param  {HTMLElement} element  HTMLElement to instantiate on
+	 * @param  {Node|NodeList} nodes  Node or NodeList to instantiate on
 	 * @param  {object} options Options object
+	 * @param.name {string} [name=computedStyle.animationName] animation-name to read keyframes for
+	 * @param.duration {number} [duration=computedStyle.animationDuration] duration in milliseconds, positive
+	 * @param.delay {number} [delay=computedStyle.animationDelay] delay in milliseconds, positive or negative
+	 * @param.iterationCount {number} [iterationCount=computedStyle.animationIterationCount] positive number of times the animation runs
+	 * @param.timingFunction {string} [timingFunction=computedStyle.animationTimingFunction] CSS timing function string
+	 * @param.playState {string} [playState=computedStyle.playState] CSS playstate string. Either 'paused' or 'running'
 	 * @param  {Window} [window=global.window] Global context to use
 	 * @param  {Document} [document=global.window] Document context to use
 	 * @return {JogWheel} JogWheel instance
@@ -14,16 +20,8 @@ class JogWheel {
 	 * import JogWheel from 'jogwheel';
 	 * const element = document.querySelector('[data-animated]');
 	 *
-	 * // Instantiate a paused JogWheel instance on element
-	 * const wheel = JogWheel.create(element, {
-	 * 	paused: true
-	 * });
-	 *
-	 * // Seek to middle of animation sequence
-	 * wheel.seek(0.5);
-	 *
-	 * // Play the animation
-	 * wheel.play();
+	 * // Instantiate a JogWheel instance on element
+	 * const wheel = new JogWheel(element);
 	 */
 	static create(...args) {
 		return new JogWheel(...args);
@@ -31,9 +29,16 @@ class JogWheel {
 
 	/**
 	 * Creates a new JogWheel instance
+	 * @name JogWheel.constructor
 	 * @constructor
 	 * @param  {Node|NodeList} nodes  Node or NodeList to instantiate on
 	 * @param  {object} options Options object
+	 * @param.name {string} [name=computedStyle.animationName] animation-name to read keyframes for
+	 * @param.duration {number} [duration=computedStyle.animationDuration] duration in milliseconds, positive
+	 * @param.delay {number} [delay=computedStyle.animationDelay] delay in milliseconds, positive or negative
+	 * @param.iterationCount {number} [iterationCount=computedStyle.animationIterationCount] positive number of times the animation runs
+	 * @param.timingFunction {string} [timingFunction=computedStyle.animationTimingFunction] CSS timing function string
+	 * @param.playState {string} [playState=computedStyle.playState] CSS playstate string. Either 'paused' or 'running'
 	 * @param  {Window} [window=global.window] Global context to use
 	 * @param  {Document} [document=global.window] Document context to use
 	 * @return {JogWheel} JogWheel instance
@@ -49,8 +54,7 @@ class JogWheel {
 			throw new Error(`Could not construct JogWheel, missing element`);
 		}
 
-		const settings = {...defaults, ...options};
-
+		const settings = {...options};
 		const elements = nodes instanceof window.NodeList ? [].slice.call(nodes) : [nodes]; // eslint-disable-line prefer-reflect
 		const configurations = elements.map(element => getPlayer(element, settings, window, document));
 		const players = configurations.map(configuration => configuration.player);
@@ -62,6 +66,7 @@ class JogWheel {
 	}
 
 	/**
+	 * @name JogWheel.prototype.playState
 	 * @readonly
 	 * @return {string} playState, either `running` or `paused`
 	 */
@@ -73,6 +78,7 @@ class JogWheel {
 	}
 
 	/**
+	 * @name JogWheel.prototype.progress
 	 * @readonly
 	 * @return {float} progress in fraction of 1 [0..1]
 	 */
@@ -85,6 +91,7 @@ class JogWheel {
 	}
 
 	/**
+	 * @name JogWheel.prototype.players
 	 * @readonly
 	 * @return {array} WebAnimationPlayer instances by JogWheel instance
 	 */
@@ -93,6 +100,7 @@ class JogWheel {
 	}
 
 	/**
+	 * @name JogWheel.prototype.durations
 	 * @readonly
 	 * @return {array} durations used by JogWheel instance
 	 */
@@ -102,6 +110,7 @@ class JogWheel {
 
 	/**
 	 * Plays the animation
+	 * @name JogWheel.prototype.play()
 	 * @return {JogWheel} JogWheel instance
 	 * @example
 	 * import JogWheel from 'jogwheel';
@@ -122,6 +131,7 @@ class JogWheel {
 
 	/**
 	 * Pauses the animation
+	 * @name JogWheel.prototype.pause()
 	 * @return {JogWheel} JogWheel instance
 	 * @example
 	 * import JogWheel from 'jogwheel';
@@ -142,6 +152,7 @@ class JogWheel {
 
 	/**
 	 * Seeks the timeline of the animation
+	 * @name JogWheel.prototype.seek()
 	 * @param  {float} progress fraction of the animation timeline [0..1]
 	 * @return {JogWheel} JogWheel instance
 	 * @example
@@ -221,18 +232,6 @@ class JogWheel {
 	unplug() {
 		// TODO: implement this
 		// TODO: test this
-		return this;
-	}
-
-	/**
-	 * Renders inline styles on the instance element if applicable
-	 * @return {JogWheel} JogWheel instance
-	 * @private
-	 */
-	render() {
-		// TODO: add documentation
-		// TODO: implement this, must proxy element writes for e.g. react integration
-		// this.settings.render(this.element, styles);
 		return this;
 	}
 }
